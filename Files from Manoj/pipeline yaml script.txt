@@ -1,0 +1,73 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+#- 586152
+- none
+
+name: $(Build.SourceBranchName)-$(Build.BuildID)-$(Rev:.r)
+
+variables:
+- name: buildPlatform
+  value: Any CPU
+
+stages:
+- stage: __default
+  jobs:
+  - job: Job1
+    timeoutInMinutes: 0
+    pool:
+      name: 'Devops Online Machines'
+    steps:
+    - script: date /t
+      displayName: Get the date
+    - script: dir
+      workingDirectory: $(Agent.BuildDirectory)
+      displayName: List contents of a folder
+      
+    - task: CmdLine@2
+      displayName: Check Source Directory
+      inputs:
+        script: |
+          echo '$(Agent.BuildDirectory)'
+
+    - task: PowerShell@2
+      inputs:
+         targetType: 'inline'
+         script: |
+            $PATTERN = "\@" + ${env:TAGS}
+            $dirCount=(Get-ChildItem -Recurse "C:\agent\_work\1\s\suites\suite_KoolProg\tst_ERC_*\test.feature" | Select-String -pattern $PATTERN | Select-Object -Unique Path | Split-Path | Split-Path -Leaf)
+            $TAGS = ${env:TAGS}
+            [string]$dir_specific = $dirCount -join ','
+            echo "following tests cases are getting executed"
+            echo $dir_specific
+            Start-Process -Verb RunAs PowerShell -Wait -ArgumentList "C:\agent\_work\1\s\Run-Automation.ps1", "-TestCase", "$dir_specific", "-Tags", "$TAGS" 
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(agent.builddirectory)\s\KoolProg_Test_Reports_html'
+        Contents: '**'
+        TargetFolder: 'C:\KoolProg_Test_REPORTS\Build-$(Build.BuildID)'
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: 'C:\KoolProg_Test_REPORTS\Build-$(Build.BuildID)'
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: 'C:\KoolProg_Test_REPORTS\Build-$(Build.BuildID)\HTML-Report-Build-$(Build.BuildID).zip'
+        replaceExistingArchive: false
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**\*.xml'
+        searchFolder: '$(agent.builddirectory)\s\KoolProg_Test_REPORTS_xml'
+        failTaskOnFailedTests: false
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'C:\KoolProg_Test_REPORTS\Build-$(Build.BuildID)'
+        artifact: 'Test Reports'
+        publishLocation: 'Pipeline'

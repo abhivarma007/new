@@ -1,0 +1,228 @@
+
+# Command to run random controller specfic testcase and specfic tags: 
+# .\Run-Automation.ps1 -TestSuite suite_KoolProg -TestCase tst_common_offline_test_cases -Tags KP_Common_ID_4.8 -IsContrSpecific no -TestCasePath "C:\KoolProg\TestSourceCode"
+
+# Command to run random controller specfic testcase: 
+# .\Run-Automation.ps1 -TestSuite suite_KoolProg -TestCase tst_common_offline_test_cases -Tags all -IsContrSpecific no -TestCasePath "C:\KoolProg\TestSourceCode"
+
+# Command to run controller specific all testcase: 
+# .\Run-Automation.ps1 -TestSuite suite_KoolProg -TestCase all -IsContrSpecific yes -TestCasePath "C:\KoolProg\TestSourceCode"
+
+# Command to run random controller all testcase: 
+# .\Run-Automation.ps1 -TestSuite suite_KoolProg -TestCase all -IsContrSpecific no -TestCasePath "C:\KoolProg\TestSourceCode"
+Param(
+    [Parameter()]
+    [string]$TestSuite = "C:\agent\_work\1\s\suites\suite_KoolProg",
+
+    [Parameter()]
+    [string[]]$TestCase = "tst_ERC_Open",
+    [Parameter()]
+    [string[]]$Tags = "KP_CRO_ID_17",
+
+    [Parameter()]
+    [string]$IsContrSpecific = "no",
+
+    [Parameter()]
+    [string]$TestCasePath = "C:\agent\_work\1\s\suites\suite_KoolProg"
+
+)
+
+Function Main {
+    $jd = "C:\agent\_work\1\s\KoolProg_Test_REPORTS_xml"
+    $kd = "C:\agent\_work\1\s\KoolProg_Test_REPORTS_html"
+    $WD = "C:\agent\_work\1\s"
+    $script:WORKINGDIR = $WD
+	
+	$script:LOGDIR = $WORKINGDIR + "\run\log"
+
+    RunSquishServer
+
+    SetEnvVariables
+
+    ClearReportDir
+
+	Foreach ($TS in $TestCase)
+	{
+		if ($IsContrSpecific -ne '' -AND $IsContrSpecific-eq "yes")
+		{
+			
+			RunContrTestSuite
+		}
+		else 
+		{
+			RunRandomContrTestSuite
+		}
+	}
+	
+    StopSquishServer
+	}
+
+Function SetLogDirectory
+{
+	if($TS -ne 'all')
+    {
+		$script:LOGDIR = $WORKINGDIR + "\run\log\" + $TS
+	}
+}
+
+Function RunSquishServer
+{
+    $ProcessActive = Get-Process squishserver -ErrorAction SilentlyContinue
+    if($ProcessActive -eq $null)
+    {
+        Write-host "`n## Squish server is not running"
+
+        Start-Process squishserver.exe
+        cmd /c "start squishserver.exe" 
+
+        Write-host "Squish server started successfully..."
+    }
+    else
+    {
+        Write-host "Squish server is running..."
+    }
+}
+
+Function StopSquishServer
+{
+    $ProcessActive = Get-Process squishserver -ErrorAction SilentlyContinue
+    if($ProcessActive -ne $null)
+    {
+        
+        Write-host "`n## Stopping Squish server..."
+
+        cmd /c "taskkill /f /im _squishserver.exe"
+
+        Write-host "---------Server Stopped----------"
+    } 
+    else 
+    {
+        Write-host "---------Server Stopped----------"
+    }
+}
+
+# Set variables
+Function SetEnvVariables{
+    
+    Write-Host "`n## Set the variables"
+    
+	$COMMONDIR = $WORKINGDIR + "\SourceCode\lib\common"
+	$INPUTDIR = $WORKINGDIR + "\SourceCode\lib\InputSheetParser"
+	$KPLIBDIR = $WORKINGDIR + "\SourceCode\lib\KoolProgLib"
+	$WINAPPLIBDIR = $WORKINGDIR + "\SourceCode\lib\winappLib"
+	$REPORTDIR = $WORKINGDIR + "\SourceCode\lib\Report"
+    $KEYWORDSDIR = $WORKINGDIR + "\SourceCode\lib\test_keywords"
+    $NAVIGATIONDIR = $WORKINGDIR + "\SourceCode\lib\navigation"
+    $SERIALAPPDIR = $WORKINGDIR + "\SourceCode\lib\SerialApp"
+    $SERIALAPIDIR = $WORKINGDIR + "\SourceCode\lib\SerialLib"
+	$FACTORYMETHODDIR = $WORKINGDIR + "\SourceCode\lib\FactoryMethod_Classes"
+	$EETDIR = $WORKINGDIR + "\SourceCode\lib\EET"
+	$EKE1xDIR = $WORKINGDIR + "\SourceCode\lib\EKE1x"
+	$ERC11xDIR = $WORKINGDIR + "\SourceCode\lib\ERC11x"
+	$ERC21xDIR = $WORKINGDIR + "\SourceCode\lib\ERC21x"
+	$ETC1HxDIR = $WORKINGDIR + "\SourceCode\lib\ETC1Hx"
+	$AKCC55DIR = $WORKINGDIR + "\SourceCode\lib\AKCC55"
+	$ConstantsDIR = $WORKINGDIR + "\SourceCode\lib\Constants"
+    $CONTROLLER_FAMILY_LIBRARIES_INTERFACESDIR = $WORKINGDIR + "\SourceCode\lib\Controller_Family_Libraries_Interfaces"
+    $ASSERTSDIR = $WORKINGDIR + "\SourceCode\lib\Asserts"
+    $COMPONENTSDIR = $WORKINGDIR + "\SourceCode\lib\Components"
+    $CONTROLSCLASSESDIR = $WORKINGDIR + "\SourceCode\lib\ControlsClasses"
+    $CREATING_MODULESDIR = $WORKINGDIR + "\SourceCode\lib\creating_modules"
+    $EXPECTEDDATADIR = $WORKINGDIR + "\SourceCode\lib\ExpectedData"
+    $EXPECTEDDATASTATESDIR = $WORKINGDIR + "\SourceCode\lib\ExpectedDataStates"
+    $UICONTROLSTATESDIR = $WORKINGDIR + "\SourceCode\lib\UIControlStates"
+    $INDEPENDENT_OF_AUTDIR = $WORKINGDIR + "\Independent_of_AUT"
+
+	
+	$PYTHONPATH = $COMMONDIR + ";" + $INPUTDIR + ";" + $KPLIBDIR + ";" + $WINAPPLIBDIR + ";" + $REPORTDIR + ";" + $KEYWORDSDIR + ";" + 
+				  $NAVIGATIONDIR+ ";" + $SERIALAPPDIR+ ";" + $SERIALAPIDIR+ ";" + $FACTORYMETHODDIR + ";" +$EETDIR + ";" +$EKE1xDIR + ";" +$ERC11xDIR +";" + 
+				  $ERC21xDIR + ";" +$ETC1HxDIR +";" +$AKCC55DIR +";" +$CONTROLLER_FAMILY_LIBRARIES_INTERFACESDIR +";" + $ConstantsDIR +";" + $ASSERTSDIR +";" + 
+                  $COMPONENTSDIR +";" + $CONTROLSCLASSESDIR +";" + $CREATING_MODULESDIR +";" + $EXPECTEDDATADIR +";" + $EXPECTEDDATASTATESDIR +";" + $UICONTROLSTATESDIR +";" +
+                  $INDEPENDENT_OF_AUTDIR
+
+    $env:PYTHONPATH = $PYTHONPATH
+	
+    Write-Host "TestSuite = $TestSuite"
+	Write-Host "TestCase = $TestCase"
+	Write-Host "Tags = $Tags"
+	Write-Host "IsContrSpecific = $IsContrSpecific"
+	Write-Host "TestCasePath = $TestCasePath"
+    Write-Host "PythonPath = $PYTHONPATH"
+	
+	Write-Host "---Completed!---"
+}
+
+# Remove old reports
+Function ClearReportDir
+{
+	Write-Host "`n## Clean up the report folder"
+    if(Test-Path -path $LOGDIR)
+    {
+        cmd /c "rmdir /s /q $LOGDIR"
+        Write-Host "Deleted the old report files in $LOGDIR"
+    }
+	Write-Host "---Completed!---"
+}
+
+# Execute the controller specific test suite
+Function RunContrTestSuite
+{
+    try
+    {
+
+        $SQUISHPARAMETERS = ' --debugLog alpw';
+        $reportgen = " --reportgen junit,$jd\$TS.xml --reportgen html,$kd\$TS";
+        if($TestSuite -ne ''){
+            $SQUISHPARAMETERS = $SQUISHPARAMETERS + " --testsuite $TestSuite"
+        }
+        if($TestCase -ne '' -AND $TestCase -ne 'all'){
+            $SQUISHPARAMETERS = $SQUISHPARAMETERS + " --testcase $TS"
+        }
+        if($Tags -ne '' -AND $Tags -ne 'all'){
+            $SQUISHPARAMETERS = $SQUISHPARAMETERS + " --tags $Tags"
+        }
+
+        $SQUISHPARAMETERS = $SQUISHPARAMETERS + " " + $reportgen
+		Write-Host "Squish Parameters: $SQUISHPARAMETERS" 
+		$env:test_case="$TS"
+		Write-Host test_case
+	    Start-Process "..\DevopsAutomation\run\run_test.bat" $TS,$Tags
+        Write-Host "---Completed!---"
+    }
+    catch {
+        Write-Host "`nException occured!"
+    }
+}
+
+# Execute the test suite
+Function RunRandomContrTestSuite
+{
+    try 
+    {
+        $SQUISHPARAMETERS = ' --debugLog alpw';
+        $reportgen = " --reportgen junit,$jd\$TS.xml --reportgen html,$kd\$TS";
+        if($TestSuite -ne ''){
+            $SQUISHPARAMETERS = $SQUISHPARAMETERS + " --testsuite $TestSuite"
+        }
+        if($TestCase -ne '' -AND $TestCase -ne 'all'){
+            $SQUISHPARAMETERS = $SQUISHPARAMETERS + " --testcase $TS"
+        }
+        if($Tags -ne '' -AND $Tags -ne 'all'){
+            $SQUISHPARAMETERS = $SQUISHPARAMETERS + " --tags $Tags"
+        }
+
+        $SQUISHPARAMETERS = $SQUISHPARAMETERS + " " + $reportgen
+        Write-Host "Squish Parameters: $SQUISHPARAMETERS" 
+	    
+        cmd /c "squishrunner $SQUISHPARAMETERS"
+	    
+        Write-Host "---Completed!---"
+    }
+    catch {
+        Write-Host "`nException occured!"
+    }
+}
+
+Main
+
+
