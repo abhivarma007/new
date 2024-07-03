@@ -1,0 +1,86 @@
+To check the veriosn of the PowerShell
+
+$PSVersionTable
+
+==============================PowerShell cmdlets============================
+
+-------------------------Print statment---------------------
+
+To print anything in PS we need to use echo commandor cmdlets
+
+-------------Get-Help-----------------
+This cmdlets helps us to find the syntax of the cmdlets 
+ex: Get-Help New-Item, Get-Help Write-Host
+
+----------New-Item--------------
+This cmdlets is used to create a file or folder in the directory
+
+Syntax to create a file: New-Item -Path <c:\users\desktop> -Name "<name of the file>" -Itemtype "file" -value "This is the test file"
+
+Syntax to create a directory: New-Item -Path <location> -Name "<Name of the Dir>" -Itemtype "Directory" 
+Get-Help New-Item
+
+---------Copy-Item------------------
+
+This cmdlets will copy the files from one location to another location
+
+Syntax: Copy-Item -Path <source file location> -Destination <destination path>
+
+To copy all the files from a folder try using \* on the -Path <C:\users\ab\Python\*>
+
+Syntax: Copy-Item -Path <location\*> -Destination <location>
+
+
+---------Rename-Item------------------
+
+This command renames the file or folder Item
+
+Syntax: Rename-item -Path <> -NewName "renamed_using_ps"
+
+----------Remove-Item-----------------
+This cmdlets removes the files or folder
+
+Syntax: Remove-Item -Path "location"
+
+Use of Exclude/Include functionality
+
+Use Exclude functionality when you want to exclude any file to be copied/removed in the folder
+
+Syntax: cmdlet -Exclude *<keyworrk which you filename has>*
+
+Include cmdlet should be used along with Exclude functionality
+
+---------Move-Item--------------
+Move-Item cmdlets is used to move the files/folder onto target location
+
+Syntax: Move-Item -Path <source location> -Destination <Destination location of the file>
+
+----------Get-Item--------------
+This cmdlets is used to get the items in the specified location, it is similar to ls cmdlets which displays current available items
+
+Syntax: Get-Items -Path <location>
+
+We can use the properties of the directory to know last accesstime etc, to get the list of available properties use Get-Member cmdlets
+
+ex: (Get-Member -Path <>).<PropertType>
+ (Get-Item -Path "C:\Users\DD944YU\EY\ST James Pathology Cloud Bid - General\*") | Get-Member
+
+(Get-Member -Path <>).LastAccessTime
+
+-------------Get-Member---------------
+
+This cmdlets is used to get the properties and methods of objects
+
+We can know what methods and properties are present for the objects
+
+Syntax: <object> | Get-Member
+
+------------------------Set-Content--------------------------
+
+This cmdlets is used to add the content onto the file
+
+Syntax: Set-Content -Path <> -Value "This content this written on 09/06/2024"
+
+Usage of Filter command, this cmdlets is used to filter the files in the directory,
+
+Ex: Set-Content -Path <> -Filter *.txt -Value "Empty string"

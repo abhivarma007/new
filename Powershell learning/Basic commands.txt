@@ -1,0 +1,149 @@
+To check the veriosn of the PowerShell
+
+$PSVersionTable
+
+==============================PowerShell cmdlets============================
+
+-------------------------Print statment---------------------
+
+To print anything in PS we need to use echo commandor cmdlets
+
+-------------Get-Help-----------------
+This cmdlets helps us to find the syntax of the cmdlets 
+ex: Get-Help New-Item, Get-Help Write-Host
+
+----------New-Item--------------
+This cmdlets is used to create a file or folder in the directory
+
+Syntax to create a file: New-Item -Path <c:\users\desktop> -Name "<name of the file>" -Itemtype "file" -value "This is the test file"
+
+Syntax to create a directory: New-Item -Path <location> -Name "<Name of the Dir>" -Itemtype "Directory" 
+Get-Help New-Item
+
+---------Copy-Item------------------
+
+This cmdlets will copy the files from one location to another location
+
+Syntax: Copy-Item -Path <source file location> -Destination <destination path>
+
+To copy all the files from a folder try using \* on the -Path <C:\users\ab\Python\*>
+
+Syntax: Copy-Item -Path <location\*> -Destination <location>
+
+
+---------Rename-Item------------------
+
+This command renames the file or folder Item
+
+Syntax: Rename-item -Path <> -NewName "renamed_using_ps"
+
+----------Remove-Item-----------------
+This cmdlets removes the files or folder
+
+Syntax: Remove-Item -Path "location"
+
+Use of Exclude/Include functionality
+
+Use Exclude functionality when you want to exclude any file to be copied/removed in the folder
+
+Syntax: cmdlet -Exclude *<keyworrk which you filename has>*
+
+Include cmdlet should be used along with Exclude functionality
+
+---------Move-Item--------------
+Move-Item cmdlets is used to move the files/folder onto target location
+
+Syntax: Move-Item -Path <source location> -Destination <Destination location of the file>
+
+----------Get-Item--------------
+This cmdlets is used to get the items in the specified location, it is similar to ls cmdlets which displays current available items
+
+Syntax: Get-Items -Path <location>
+
+We can use the properties of the directory to know last accesstime etc, to get the list of available properties use Get-Member cmdlets
+
+ex: (Get-Member -Path <>).<PropertType>
+ (Get-Item -Path "C:\Users\DD944YU\EY\ST James Pathology Cloud Bid - General\*") | Get-Member
+
+(Get-Member -Path <>).LastAccessTime
+
+-------------Get-Member---------------
+
+This cmdlets is used to get the properties and methods of objects
+
+We can know what methods and properties are present for the objects
+
+Syntax: <object> | Get-Member
+
+------------------------Set-Content--------------------------
+
+This cmdlets is used to add the content onto the file
+
+Syntax: Set-Content -Path <> -Value "This content this written on 09/06/2024"
+
+Usage of Filter command, this cmdlets is used to filter the files in the directory,
+
+Ex: Set-Content -Path <> -Filter *.txt -Value "Empty string"
+
+----------Get-Content-----------
+This cmdlet is used to get the content of an item
+
+Syntax: Get-Content -Path <>
+Get-Content -Path <> -TotalCount 3 -- > this will get the first three lines of the item
+
+Tail will count the values from bottom
+
+Ex: Get-Content -Path <> -Tail 5
+
+-----------Add-Content-------------
+This cmdlet is used to ammend the content ona file
+
+Syntax: Add-Content -Path <> -Value "string"
+
+You can copy the content of a file to another file
+
+$New = Get-Content -Path <>
+Add-Content -Path <> -Value $New
+
+----------Clear-Content--------------
+
+This will clear the content inside the a item, but it won't delete the file it self
+
+Syntax: Clear-Content -Path <>
+
+-----------------Test-Path----------------
+This cmdlet will tell if the file or directory exisit or not
+
+Syntax: Test-Path  -Path <>
+
+-------------Get-Date----------------
+You'll be able to get the current date and time
+
+Syntax: Get-Date
+o/p: Sunday 9 June 2024 11:19:11
+With other parameters like only date, ex: Get-Date -DisplayHint Date
+
+To convert the output to dd/MM/yyyy format use the format parameter
+
+Get-Date -Format "dd/MM/yyy"
+
+-----------Write-Host-----------
+This writes customised output to a host
+
+Syntax: Write-Host "Hello"
+
+Make use of Backgroundcolor and ForegroundColor parameters to customize the output
+
+Ex: Write-Host "Hello!!" -BackgroundColor Yellow -ForegroundColor Red
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Advanced Cmdlets!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+------------------ForEach-Objet---------------------
+
+Performs an operation against the each item of the input block
+
+Syntax: Input values | ForEach-Object -Process {$_(operation_type)}
+
+$_ variable represent tge current object/current input values
+
+1,2,3,4,5 | ForeEach-Object -Process {$_+2}
